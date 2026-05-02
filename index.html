@@ -245,9 +245,8 @@
   }
   .about-frame img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
   .about-monogram {
-    position:absolute; bottom:-0.5rem; right:1.5rem;
-    font-family:var(--serif); font-style:italic; font-size:10rem; font-weight:400; line-height:1;
-    color:rgba(232,197,71,0.04); user-select:none; pointer-events:none;
+    position:absolute; bottom:-1.5rem; left:0; font-family:var(--serif); font-size:10rem;
+    font-style:italic; color:rgba(232,197,71,0.04); line-height:1; user-select:none; pointer-events:none;
   }
   .about-badge {
     position:absolute; bottom:-12px; right:-12px; background:var(--accent); color:var(--bg);
@@ -260,6 +259,7 @@
     border-radius:50%; border:1px solid rgba(79,196,207,0.18);
   }
 
+  /* PROJECTS */
   .projects-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:3.5rem; }
   .proj-card {
     background:var(--bg2); border:1px solid var(--border);
@@ -317,6 +317,7 @@
   .proj-link:hover { gap:0.8rem; }
   .link-gold { color:var(--accent); }
   .link-teal { color:var(--accent2); }
+  .link-violet { color:var(--accent3); }
 
   .proj-wide { grid-column:1/-1; display:grid; grid-template-columns:1.1fr 0.9fr; }
   .proj-wide .proj-img { height:100%; min-height:260px; }
@@ -325,6 +326,7 @@
   .proj-faded { opacity:0.4; border-style:dashed; }
   .proj-faded:hover { opacity:0.65; transform:translateY(-3px) !important; }
 
+  /* CONTACT */
   .contact-wrap { position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:0 4rem 8rem; }
   .contact-card {
     background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-xl);
@@ -533,7 +535,7 @@
 
   <div class="projects-grid">
 
-    <!-- Project 1 — Netflix wide featured -->
+    <!-- Project 1 — Netflix -->
     <div class="proj-card proj-wide reveal">
       <div class="proj-img bg-netflix" style="background-image:url('netflix_infographic.png');background-size:cover;background-position:center top;">
         <div class="proj-gradient-overlay"></div>
@@ -552,47 +554,50 @@
         <a href="https://github.com/chesergon/Netflix-Movies-Data-Cleaning-" target="_blank" class="proj-link link-gold">View Project →</a>
       </div>
     </div>
-<!-- Project 2 -->
-      <div class="project-card pc2 card-wide reveal rd1">
-        <div class="project-img-area pimg-crime" style="position:relative;overflow:hidden;min-height:280px;background:linear-gradient(145deg,#020d1f 0%,#0a2140 50%,#0d3b6e 100%);">
-          <img src="photo2.jpeg" alt="LA Crime Dashboard" style="width:100%;height:100%;object-fit:cover;object-position:center top;position:absolute;inset:0;" onerror="this.style.display='none'">
-          <div class="proj-overlay"></div>
-          <div class="proj-badge badge-t">Dashboard</div>
+
+    <!-- Project 2 — Crime Dashboard -->
+    <div class="proj-card proj-wide reveal d1">
+      <div class="proj-img bg-crime" style="background-image:url('photo2.jpeg');background-size:cover;background-position:center top;">
+        <div class="proj-gradient-overlay"></div>
+        <div class="proj-pill pill-teal">Dashboard</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-meta">Data Visualisation</div>
+        <h3 class="proj-title">LA Crime Analysis Dashboard</h3>
+        <p class="proj-desc">Interactive Tableau dashboard analysing LA crime patterns 2020–2024 — visualising hotspots, trends over time, and category breakdowns to support data-driven decisions.</p>
+        <div class="proj-tags">
+          <span class="ptag">Tableau</span>
+          <span class="ptag">SQL</span>
+          <span class="ptag">Visualisation</span>
         </div>
-        <div class="project-body" style="display:flex;flex-direction:column;justify-content:center;padding:3rem;">
-          <div class="project-label">Data Visualisation</div>
-          <h3 class="project-title">LA Crime Analysis Dashboard</h3>
-          <p class="project-desc">Interactive Tableau dashboard analysing LA crime patterns 2020–2024 — visualising hotspots, trends over time, and category breakdowns to support data-driven decisions.</p>
-          <div class="project-tags" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.4rem;">
-            <span class="tag">Tableau</span>
-            <span class="tag">SQL</span>
-            <span class="tag">Visualisation</span>
-          </div>
-          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;">
-            <a href="https://public.tableau.com/app/profile/lyne.chesergon/viz/LAcrimeanalysis_17775895867650/LAcrimeAnalysis2020-2024?publish=yes" target="_blank" rel="noopener noreferrer" class="proj-link lt">View Dashboard →</a>
-            <a href="#" target="_blank" class="proj-link" style="color:var(--violet);display:inline-flex;align-items:center;gap:0.4rem;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-              View on GitHub
-            </a>
-          </div>
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;">
+          <a href="https://public.tableau.com/app/profile/lyne.chesergon/viz/LAcrimeanalysis_17775895867650/LAcrimeAnalysis2020-2024?publish=yes" target="_blank" class="proj-link link-teal">View Dashboard →</a>
+          <!-- 👉 Replace # with your GitHub repo URL -->
+          <a href="#" target="_blank" class="proj-link link-violet">View on GitHub →</a>
         </div>
       </div>
- 
-      <!-- Project 3 — coming soon -->
-      <div class="project-card pc3 card-wide card-dashed reveal rd2">
-        <div class="project-img-area pimg-coming" style="min-height:280px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:3.5rem;opacity:0.35;">➕</span>
-        </div>
-        <div class="project-body" style="display:flex;flex-direction:column;justify-content:center;padding:3rem;">
-          <div class="project-label">Next Project</div>
-          <h3 class="project-title">Your Next Project</h3>
-          <p class="project-desc">This slot is ready for your next project. Edit the HTML to add your title, description, screenshot, and link.</p>
-          <div class="project-tags">
-            <span class="tag">Add Tags</span>
-          </div>
-          <a href="#" class="proj-link" style="color:var(--dim);">Add Link →</a>
-        </div>
+    </div>
+
+    <!-- Project 3 — Coming Soon -->
+    <div class="proj-card proj-wide proj-faded reveal d2">
+      <div class="proj-img bg-empty" style="display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:3rem;opacity:0.3;">➕</span>
+        <div class="proj-pill pill-violet">Coming Soon</div>
       </div>
+      <div class="proj-body">
+        <div class="proj-meta">Next Project</div>
+        <h3 class="proj-title">Your Next Project</h3>
+        <p class="proj-desc">This slot is ready for your next project. Edit the HTML to add your title, description, screenshot, and link.</p>
+        <div class="proj-tags">
+          <span class="ptag">Add Tags</span>
+        </div>
+        <a href="#" class="proj-link" style="color:var(--dim);">Add Link →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- CONTACT -->
 <div class="contact-wrap" id="contact">
   <div class="section-tag reveal"><span class="tag-line"></span>Get In Touch</div>
@@ -611,7 +616,6 @@
       <a href="mailto:lynechesergon18@gmail.com" class="contact-email">lynechesergon18@gmail.com</a><br/>
       <a href="mailto:lynechesergon18@gmail.com" class="btn-primary" style="margin-top:1rem;display:inline-block;">Send an Email →</a>
     </div>
-
     <div class="contact-right">
       <div>
         <div class="cinfo">
@@ -705,4 +709,4 @@
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
 </body>
-</html>
+  </html>
