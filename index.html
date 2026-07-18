@@ -1,779 +1,1559 @@
+
 <!DOCTYPE html>
+2
 <html lang="en">
+3
 <head>
+4
 <meta charset="UTF-8"/>
+5
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+6
 <title>Lyne Chesergon — Data Science Portfolio</title>
+7
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+8
 <style>
+9
   :root {
+10
     --bg:       #0a0a0e;
+11
     --bg2:      #0f0f16;
+12
     --bg3:      #141420;
+13
     --surface:  rgba(255,255,255,0.03);
+14
     --glass:    rgba(255,255,255,0.05);
+15
     --border:   rgba(255,255,255,0.07);
+16
     --border2:  rgba(255,255,255,0.12);
+17
     --text:     #ededf4;
+18
     --muted:    rgba(237,237,244,0.45);
+19
     --dim:      rgba(237,237,244,0.22);
+20
     --accent:   #e8c547;
+21
     --accent2:  #4fc4cf;
+22
     --accent3:  #c084fc;
+23
     --accent4:  #f97466;
+24
     --serif:    'DM Serif Display', Georgia, serif;
+25
     --sans:     'DM Sans', sans-serif;
+26
     --mono:     'JetBrains Mono', monospace;
+27
     --r-sm:     8px;
+28
     --r-md:     16px;
+29
     --r-lg:     24px;
+30
     --r-xl:     32px;
+31
   }
-
+32
+ 
+33
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+34
   html { scroll-behavior:smooth; }
+35
   body {
+36
     background: var(--bg); color: var(--text);
+37
     font-family: var(--sans); overflow-x: hidden;
+38
     cursor: none; font-size: 16px; -webkit-font-smoothing: antialiased;
+39
   }
-
+40
+ 
+41
   .cur-dot {
+42
     position:fixed; width:5px; height:5px; background:var(--accent);
+43
     border-radius:50%; pointer-events:none; z-index:9999;
+44
     transform:translate(-50%,-50%); transition:background 0.25s;
+45
   }
+46
   .cur-ring {
+47
     position:fixed; width:30px; height:30px;
+48
     border:1px solid rgba(232,197,71,0.4); border-radius:50%;
+49
     pointer-events:none; z-index:9998; transform:translate(-50%,-50%);
+50
     transition:width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
+51
   }
+52
   .cur-ring.hovering {
+53
     width:44px; height:44px; background:rgba(232,197,71,0.06);
+54
     border-color:rgba(232,197,71,0.7);
+55
   }
-
+56
+ 
+57
   #grid-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.22; }
+58
   .grain {
+59
     position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.025;
+60
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+61
     background-size:256px;
+62
   }
-
+63
+ 
+64
   nav {
+65
     position:fixed; top:0; left:0; right:0; z-index:500;
+66
     display:flex; justify-content:space-between; align-items:center;
+67
     padding:1.25rem 4rem; background:rgba(10,10,14,0.75);
+68
     backdrop-filter:blur(32px); border-bottom:1px solid var(--border);
+69
   }
+70
   .nav-logo { font-family:var(--serif); font-size:1.1rem; color:var(--text); }
+71
   .nav-logo span { color:var(--accent); }
+72
   .nav-links { display:flex; gap:2.5rem; align-items:center; }
+73
   .nav-links a {
+74
     color:var(--muted); text-decoration:none; font-size:0.78rem;
+75
     font-weight:500; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.25s;
+76
   }
+77
   .nav-links a:hover { color:var(--text); }
+78
   .nav-cta {
+79
     color:var(--bg) !important; background:var(--accent);
+80
     padding:0.5rem 1.25rem; border-radius:var(--r-sm);
+81
     font-weight:600 !important; transition:opacity 0.25s, transform 0.2s !important;
+82
   }
+83
   .nav-cta:hover { opacity:0.88; transform:translateY(-1px); }
-
+84
+ 
+85
   .hero {
+86
     min-height:100vh; display:grid; grid-template-columns:1fr 1fr;
+87
     align-items:center; padding:9rem 4rem 5rem; gap:5rem;
+88
     position:relative; z-index:2;
+89
   }
+90
   .hero-left { position:relative; }
+91
   .hero-kicker {
+92
     display:inline-flex; align-items:center; gap:0.6rem;
+93
     font-family:var(--mono); font-size:0.7rem; letter-spacing:0.1em;
+94
     color:var(--accent); margin-bottom:2.2rem;
+95
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+96
   }
+97
   .kicker-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:blink 2s ease-in-out infinite; }
+98
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
+99
+ 
+100
   h1.hero-name {
+101
     font-family:var(--serif); font-size:clamp(3.8rem,6.5vw,6.5rem);
+102
     line-height:1.0; font-weight:400;
+103
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+104
   }
+105
   h1.hero-name .first { color:var(--text); display:block; }
+106
   h1.hero-name .last  { display:block; font-style:italic; color:var(--accent); }
-
+107
+ 
+108
   .hero-role {
+109
     display:flex; align-items:center; gap:1rem; margin:1.6rem 0;
+110
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.28s forwards;
+111
   }
+112
   .role-bar { height:1px; width:40px; background:var(--border2); }
+113
   .role-text { font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
-
+114
+ 
+115
   .hero-sub {
+116
     font-size:1.05rem; color:var(--muted); line-height:1.85;
+117
     max-width:440px; font-weight:300; margin-bottom:2.8rem;
+118
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.34s forwards;
+119
   }
+120
   .hero-ctas {
+121
     display:flex; gap:1rem; flex-wrap:wrap;
+122
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+123
   }
+124
   .btn-primary {
+125
     background:var(--accent); color:var(--bg); border:none; padding:0.9rem 2.2rem;
+126
     border-radius:var(--r-sm); font-family:var(--sans); font-size:0.83rem; font-weight:600;
+127
     letter-spacing:0.04em; cursor:pointer; text-decoration:none;
+128
     display:inline-block; transition:opacity 0.25s, transform 0.2s;
+129
   }
+130
   .btn-primary:hover { opacity:0.88; transform:translateY(-2px); }
+131
   .btn-secondary {
+132
     background:transparent; color:var(--text); border:1px solid var(--border2);
+133
     padding:0.9rem 2.2rem; border-radius:var(--r-sm); font-family:var(--sans);
+134
     font-size:0.83rem; font-weight:400; cursor:pointer; text-decoration:none;
+135
     display:inline-block; transition:background 0.25s, border-color 0.25s, transform 0.2s;
+136
   }
+137
   .btn-secondary:hover { background:var(--glass); border-color:var(--border2); transform:translateY(-2px); }
-
+138
+ 
+139
   .hero-right {
+140
     position:relative; display:flex; align-items:center; justify-content:center;
+141
     opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.22s forwards;
+142
   }
+143
   .photo-frame { position:relative; width:360px; height:460px; }
+144
   .photo-border {
+145
     position:absolute; inset:-1px; border-radius:20px;
+146
     background:linear-gradient(145deg, rgba(232,197,71,0.4) 0%, rgba(232,197,71,0.05) 40%, rgba(79,196,207,0.2) 100%);
+147
     z-index:0;
+148
   }
+149
   .photo-inner {
+150
     position:relative; z-index:1; width:100%; height:100%;
+151
     border-radius:19px; background:var(--bg3); overflow:hidden; border:1px solid var(--border);
+152
   }
+153
   .photo-inner img { width:100%; height:100%; object-fit:cover; object-position:center 15%; display:block; }
-
+154
+ 
+155
   .chip {
+156
     position:absolute; background:rgba(10,10,14,0.92); backdrop-filter:blur(20px);
+157
     border:1px solid var(--border2); border-radius:var(--r-md); padding:0.75rem 1.1rem; z-index:4;
+158
   }
+159
   .chip-top    { top:1.8rem; right:-3.5rem; animation:float 5s ease-in-out infinite; }
+160
   .chip-bottom { bottom:2.5rem; left:-3.5rem; animation:float 5s ease-in-out infinite 2.5s; }
+161
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+162
   .chip-label { font-family:var(--mono); font-size:0.6rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:0.2rem; }
+163
   .chip-value { font-family:var(--serif); font-size:1.1rem; font-weight:400; }
+164
   .chip-value.gold { color:var(--accent); }
+165
   .chip-value.teal { color:var(--accent2); }
-
+166
+ 
+167
   .corner-accent {
+168
     position:absolute; top:-16px; left:-16px; width:80px; height:80px;
+169
     border-top:2px solid rgba(232,197,71,0.35); border-left:2px solid rgba(232,197,71,0.35);
+170
     border-radius:4px 0 0 0; pointer-events:none;
+171
   }
+172
   .corner-accent-br {
+173
     top:auto; left:auto; bottom:-16px; right:-16px;
+174
     border-top:none; border-left:none;
+175
     border-bottom:2px solid rgba(79,196,207,0.25); border-right:2px solid rgba(79,196,207,0.25);
+176
     border-radius:0 0 4px 0;
+177
   }
+178
   .orbit-ring {
+179
     position:absolute; inset:-28px; border:1px solid rgba(232,197,71,0.1);
+180
     border-radius:50%; animation:spin 14s linear infinite; pointer-events:none;
+181
   }
+182
   .orbit-ring::before {
+183
     content:''; position:absolute; top:-4px; left:50%;
+184
     width:7px; height:7px; border-radius:50%; background:var(--accent);
+185
     transform:translateX(-50%); box-shadow:0 0 14px var(--accent);
+186
   }
+187
   @keyframes spin { to{transform:rotate(360deg)} }
+188
   @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-
+189
+ 
+190
   .ticker-wrap {
+191
     position:relative; z-index:2; overflow:hidden;
+192
     border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+193
     background:rgba(255,255,255,0.015);
+194
   }
+195
   .ticker-wrap::before, .ticker-wrap::after {
+196
     content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none;
+197
   }
+198
   .ticker-wrap::before { left:0; background:linear-gradient(90deg,var(--bg),transparent); }
+199
   .ticker-wrap::after  { right:0; background:linear-gradient(-90deg,var(--bg),transparent); }
+200
   .ticker-track { display:flex; width:max-content; animation:ticker 30s linear infinite; }
+201
   .ticker-track:hover { animation-play-state:paused; }
+202
   @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+203
   .ticker-item {
+204
     display:flex; align-items:center; gap:0.8rem; padding:1rem 2.2rem;
+205
     font-family:var(--mono); font-size:0.7rem; letter-spacing:0.1em;
+206
     color:var(--dim); white-space:nowrap; transition:color 0.25s;
+207
   }
+208
   .ticker-item:hover { color:var(--muted); }
+209
   .ticker-sep { color:var(--accent); opacity:0.5; }
-
+210
+ 
+211
   .section {
+212
     position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:8rem 4rem;
+213
   }
+214
   .section-tag {
+215
     display:inline-flex; align-items:center; gap:0.7rem;
+216
     font-family:var(--mono); font-size:0.65rem; letter-spacing:0.15em;
+217
     text-transform:uppercase; color:var(--accent); margin-bottom:1.4rem;
+218
   }
+219
   .tag-line { width:24px; height:1px; background:var(--accent); }
+220
   .section-h2 {
+221
     font-family:var(--serif); font-size:clamp(2rem,3.5vw,3rem);
+222
     font-weight:400; line-height:1.15; margin-bottom:1rem;
+223
   }
+224
   .section-h2 em { font-style:italic; color:var(--accent2); }
+225
   .section-lead { color:var(--muted); font-size:0.95rem; line-height:1.85; max-width:520px; font-weight:300; }
-
+226
+ 
+227
   .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:start; margin-top:4rem; }
+228
   .about-body p { color:var(--muted); font-size:0.97rem; line-height:1.95; font-weight:300; margin-bottom:1.3rem; }
-
+229
+ 
+230
   .stats-grid {
+231
     display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border);
+232
     border-radius:var(--r-lg); overflow:hidden; border:1px solid var(--border); margin-top:2.5rem;
+233
   }
+234
   .stat-cell { background:var(--bg2); padding:1.6rem 1.8rem; transition:background 0.3s; }
+235
   .stat-cell:hover { background:var(--bg3); }
+236
   .stat-n { font-family:var(--serif); font-style:italic; font-size:2.4rem; line-height:1; margin-bottom:0.35rem; }
+237
   .s1 .stat-n { color:var(--accent); } .s2 .stat-n { color:var(--accent2); }
+238
   .s3 .stat-n { color:var(--accent3); } .s4 .stat-n { color:var(--accent4); }
+239
   .stat-l { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim); }
-
+240
+ 
+241
   .about-visual { position:relative; }
+242
   .about-frame {
+243
     width:100%; aspect-ratio:3/4; border-radius:var(--r-lg);
+244
     background:var(--bg2); border:1px solid var(--border); overflow:hidden; position:relative;
+245
   }
+246
   .about-frame img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+247
   .about-monogram {
+248
     position:absolute; bottom:-1.5rem; left:0; font-family:var(--serif); font-size:10rem;
+249
     font-style:italic; color:rgba(232,197,71,0.04); line-height:1; user-select:none; pointer-events:none;
+250
   }
+251
   .about-badge {
+252
     position:absolute; bottom:-12px; right:-12px; background:var(--accent); color:var(--bg);
+253
     width:52px; height:52px; border-radius:var(--r-md); display:flex; align-items:center;
+254
     justify-content:center; font-family:var(--serif); font-style:italic; font-size:1.1rem;
+255
     box-shadow:0 8px 28px rgba(232,197,71,0.35);
+256
   }
+257
   .about-ring {
+258
     position:absolute; top:-16px; left:-16px; width:80px; height:80px;
+259
     border-radius:50%; border:1px solid rgba(79,196,207,0.18);
+260
   }
-
+261
+ 
+262
   /* PROJECTS */
+263
   .projects-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:3.5rem; }
+264
   .proj-card {
+265
     background:var(--bg2); border:1px solid var(--border);
+266
     border-radius:var(--r-xl); overflow:hidden; position:relative;
+267
     transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, box-shadow 0.4s;
+268
   }
+269
   .proj-card:hover { transform:translateY(-6px); border-color:var(--border2); box-shadow:0 24px 60px rgba(0,0,0,0.45); }
-
+270
+ 
+271
   .proj-img {
+272
     height:200px; position:relative; overflow:hidden;
+273
     display:flex; align-items:center; justify-content:center;
+274
   }
+275
   .bg-netflix { background:linear-gradient(160deg, #110303 0%, #2d0a0a 60%, #5c0808 100%); }
+276
   .bg-crime   { background:linear-gradient(160deg, #020c1a 0%, #071f3d 60%, #0b3464 100%); }
+277
   .bg-insurance { background:linear-gradient(160deg, #0a0d14 0%, #0d1a10 50%, #0a1a0d 100%); }
+278
   .bg-empty   { background:var(--bg); border-bottom:1px solid var(--border); }
-
+279
+ 
+280
   .scan-lines { position:absolute; inset:0; overflow:hidden; opacity:0.12; }
+281
   .scan-line {
+282
     position:absolute; height:1px; left:0; right:0;
+283
     background:linear-gradient(90deg, transparent 0%, currentColor 30%, currentColor 70%, transparent 100%);
+284
     animation:scan 3.5s ease-in-out infinite;
+285
   }
+286
   @keyframes scan {
+287
     0%{top:-4px;opacity:0} 8%{opacity:1} 92%{opacity:1} 100%{top:calc(100% + 4px);opacity:0}
+288
   }
+289
   .proj-icon { font-size:3.5rem; position:relative; z-index:2; }
+290
   .proj-gradient-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, transparent 30%, rgba(10,10,14,0.7)); z-index:1; }
-
+291
+ 
+292
   .proj-pill {
+293
     position:absolute; top:1rem; left:1rem; z-index:3;
+294
     font-family:var(--mono); font-size:0.6rem; letter-spacing:0.1em;
+295
     text-transform:uppercase; font-weight:500; padding:0.28rem 0.75rem;
+296
     border-radius:100px; backdrop-filter:blur(12px);
+297
   }
+298
   .pill-gold   { background:rgba(232,197,71,0.12); border:1px solid rgba(232,197,71,0.35); color:var(--accent); }
+299
   .pill-teal   { background:rgba(79,196,207,0.1); border:1px solid rgba(79,196,207,0.3); color:var(--accent2); }
+300
   .pill-violet { background:rgba(192,132,252,0.1); border:1px solid rgba(192,132,252,0.25); color:var(--accent3); }
+301
   .pill-coral  { background:rgba(249,116,102,0.1); border:1px solid rgba(249,116,102,0.3); color:var(--accent4); }
-
+302
+ 
+303
   .proj-body { padding:1.75rem; }
+304
   .proj-meta { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--dim); margin-bottom:0.6rem; }
+305
   .proj-title { font-family:var(--serif); font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:0.65rem; color:var(--text); }
+306
   .proj-desc { color:var(--muted); font-size:0.86rem; line-height:1.8; font-weight:300; margin-bottom:1.25rem; }
+307
   .proj-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.3rem; }
+308
   .ptag {
+309
     font-family:var(--mono); font-size:0.6rem; letter-spacing:0.06em;
+310
     color:var(--dim); background:var(--surface); border:1px solid var(--border);
+311
     border-radius:4px; padding:0.18rem 0.6rem; transition:all 0.2s;
+312
   }
+313
   .ptag:hover { color:var(--text); background:rgba(255,255,255,0.06); }
+314
   .proj-link {
+315
     display:inline-flex; align-items:center; gap:0.45rem;
+316
     font-family:var(--mono); font-size:0.7rem; letter-spacing:0.08em;
+317
     text-transform:uppercase; text-decoration:none; transition:gap 0.2s; font-weight:500;
+318
   }
+319
   .proj-link:hover { gap:0.8rem; }
+320
   .link-gold { color:var(--accent); }
+321
   .link-teal { color:var(--accent2); }
+322
   .link-violet { color:var(--accent3); }
+323
   .link-coral { color:var(--accent4); }
-
+324
+ 
+325
   .proj-wide { grid-column:1/-1; display:grid; grid-template-columns:1.1fr 0.9fr; }
+326
   .proj-wide .proj-img { height:100%; min-height:260px; }
+327
   .proj-wide .proj-body { display:flex; flex-direction:column; justify-content:center; padding:2.5rem 2.8rem; }
-
+328
+ 
+329
   .proj-faded { opacity:0.4; border-style:dashed; }
+330
   .proj-faded:hover { opacity:0.65; transform:translateY(-3px) !important; }
-
+331
+ 
+332
   /* Insurance cover image styling */
+333
   .insurance-cover {
+334
     width:100%; height:100%; object-fit:cover; object-position:center;
+335
     display:block; opacity:0.88;
+336
   }
+337
   .insurance-stat {
+338
     position:absolute; bottom:1rem; right:1rem; z-index:3;
+339
     background:rgba(10,10,14,0.85); backdrop-filter:blur(12px);
+340
     border:1px solid rgba(249,116,102,0.3); border-radius:var(--r-sm);
+341
     padding:0.5rem 0.9rem; text-align:right;
+342
   }
+343
   .insurance-stat-num { font-family:var(--serif); font-style:italic; font-size:1.2rem; color:var(--accent4); }
+344
   .insurance-stat-label { font-family:var(--mono); font-size:0.55rem; letter-spacing:0.08em; color:var(--dim); }
-
+345
+ 
+346
   /* CONTACT */
+347
   .contact-wrap { position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:0 4rem 8rem; }
+348
   .contact-card {
+349
     background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-xl);
+350
     overflow:hidden; display:grid; grid-template-columns:1.1fr 0.9fr; position:relative;
+351
   }
+352
   .contact-left {
+353
     background:linear-gradient(155deg, #0c1c2e 0%, #07111f 70%, #04090f 100%);
+354
     padding:4rem; position:relative; overflow:hidden;
+355
   }
+356
   .contact-glow-1 {
+357
     position:absolute; top:-60px; right:-60px; width:240px; height:240px; border-radius:50%;
+358
     background:radial-gradient(circle, rgba(79,196,207,0.1), transparent 70%); pointer-events:none;
+359
   }
+360
   .contact-glow-2 {
+361
     position:absolute; bottom:-40px; left:-40px; width:180px; height:180px; border-radius:50%;
+362
     background:radial-gradient(circle, rgba(232,197,71,0.08), transparent 70%); pointer-events:none;
+363
   }
+364
   .contact-bg-word {
+365
     position:absolute; bottom:-1.5rem; left:0; font-family:var(--serif); font-size:8rem;
+366
     font-style:italic; color:rgba(255,255,255,0.02); line-height:1; user-select:none; pointer-events:none;
+367
   }
+368
   .contact-right { padding:3.5rem; display:flex; flex-direction:column; justify-content:space-between; }
+369
   .cinfo { margin-bottom:1.5rem; }
+370
   .cinfo-label { font-family:var(--mono); font-size:0.6rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--dim); margin-bottom:0.3rem; }
+371
   .cinfo-value { font-size:0.95rem; color:var(--text); }
+372
   .cinfo-value a { color:var(--text); text-decoration:none; transition:color 0.2s; }
+373
   .cinfo-value a:hover { color:var(--accent2); }
+374
   .contact-email {
+375
     font-family:var(--serif); font-style:italic; font-size:1rem; color:var(--accent);
+376
     text-decoration:none; display:inline-block; margin-bottom:2.5rem;
+377
     border-bottom:1px solid rgba(232,197,71,0.25); padding-bottom:0.2rem; transition:border-color 0.25s;
+378
   }
+379
   .contact-email:hover { border-color:var(--accent); }
+380
   .contact-btn-stack { display:flex; flex-direction:column; gap:0.7rem; }
+381
   .btn-line {
+382
     display:block; text-align:center; text-decoration:none;
+383
     font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em;
+384
     text-transform:uppercase; font-weight:500; padding:0.8rem;
+385
     border-radius:var(--r-sm); transition:background 0.25s, color 0.25s;
+386
   }
+387
   .btn-line-teal { color:var(--accent2); border:1px solid rgba(79,196,207,0.25); }
+388
   .btn-line-teal:hover { background:rgba(79,196,207,0.08); border-color:var(--accent2); }
+389
   .btn-line-violet { color:var(--accent3); border:1px solid rgba(192,132,252,0.2); }
+390
   .btn-line-violet:hover { background:rgba(192,132,252,0.07); border-color:var(--accent3); }
-
+391
+ 
+392
   footer {
+393
     position:relative; z-index:2; border-top:1px solid var(--border); padding:1.8rem 4rem;
+394
     display:flex; justify-content:space-between; align-items:center;
+395
     color:var(--dim); font-family:var(--mono); font-size:0.68rem; letter-spacing:0.06em;
+396
   }
+397
   .footer-brand { font-family:var(--serif); font-style:italic; color:var(--accent); font-size:0.9rem; }
-
+398
+ 
+399
   .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1); }
+400
   .reveal.in { opacity:1; transform:none; }
+401
   .d1{transition-delay:0.1s} .d2{transition-delay:0.2s} .d3{transition-delay:0.3s}
-
+402
+ 
+403
   @media (max-width:900px) {
+404
     nav { padding:1rem 1.5rem; }
+405
     .nav-links { display:none; }
+406
     .hero { grid-template-columns:1fr; padding:8rem 1.5rem 4rem; gap:4rem; }
+407
     .hero-right { order:-1; }
+408
     .photo-frame { width:260px; height:340px; }
+409
     .chip-top { right:-0.8rem; } .chip-bottom { left:-0.8rem; }
+410
     .section { padding:5rem 1.5rem; }
+411
     .about-grid { grid-template-columns:1fr; gap:3rem; }
+412
     .projects-grid { grid-template-columns:1fr; }
+413
     .proj-wide { grid-column:auto; grid-template-columns:1fr; }
+414
     .proj-wide .proj-img { min-height:180px; }
+415
     .contact-card { grid-template-columns:1fr; }
+416
     .contact-wrap { padding:0 1.5rem 6rem; }
+417
     footer { padding:1.5rem; flex-direction:column; gap:0.7rem; text-align:center; }
+418
   }
+419
 </style>
+420
 </head>
+421
 <body>
-
+422
+ 
+423
 <div class="cur-dot" id="cDot"></div>
+424
 <div class="cur-ring" id="cRing"></div>
+425
 <canvas id="grid-canvas"></canvas>
+426
 <div class="grain"></div>
-
+427
+ 
+428
 <!-- NAV -->
+429
 <nav>
+430
   <div class="nav-logo">Lyne <span>Chesergon</span></div>
+431
   <div class="nav-links">
+432
     <a href="#about">About</a>
+433
     <a href="#projects">Work</a>
+434
     <a href="#contact" class="nav-cta">Contact</a>
+435
   </div>
+436
 </nav>
-
+437
+ 
+438
 <!-- HERO -->
+439
 <section class="hero">
+440
   <div class="hero-left">
+441
     <div class="hero-kicker"><span class="kicker-dot"></span>Available for opportunities</div>
+442
     <h1 class="hero-name">
+443
       <span class="first">Lyne</span>
+444
       <span class="last">Chesergon</span>
+445
     </h1>
+446
     <div class="hero-role">
+447
       <div class="role-bar"></div>
+448
       <span class="role-text">Data Science &amp; Machine Learning</span>
+449
     </div>
+450
     <p class="hero-sub">
+451
       Turning raw data into stories that matter. I build analytical,
+452
       visual, and intelligent solutions that drive real-world decisions.
+453
     </p>
+454
     <div class="hero-ctas">
+455
       <a href="#projects" class="btn-primary">View My Work →</a>
+456
       <a href="#contact" class="btn-secondary">Get in Touch</a>
+457
     </div>
+458
   </div>
-
+459
+ 
+460
   <div class="hero-right">
+461
     <div class="photo-frame">
+462
       <div class="orbit-ring"></div>
+463
       <div class="corner-accent"></div>
+464
       <div class="corner-accent corner-accent-br"></div>
+465
       <div class="photo-border"></div>
+466
       <div class="photo-inner">
+467
         <img src="photo.jpeg" alt="Lyne Chesergon">
+468
       </div>
+469
       <div class="chip chip-top">
+470
         <div class="chip-label">projects</div>
+471
         <div class="chip-value gold">6+</div>
+472
       </div>
+473
       <div class="chip chip-bottom">
+474
         <div class="chip-label">experience</div>
+475
         <div class="chip-value teal">2+ yrs</div>
+476
       </div>
+477
     </div>
+478
   </div>
+479
 </section>
-
+480
+ 
+481
 <!-- TICKER -->
+482
 <div class="ticker-wrap">
+483
   <div class="ticker-track">
+484
     <span class="ticker-item">Python <span class="ticker-sep">/</span></span>
+485
     <span class="ticker-item">NumPy <span class="ticker-sep">/</span></span>
+486
     <span class="ticker-item">Pandas <span class="ticker-sep">/</span></span>
+487
     <span class="ticker-item">SQL <span class="ticker-sep">/</span></span>
+488
     <span class="ticker-item">Tableau <span class="ticker-sep">/</span></span>
+489
     <span class="ticker-item">Machine Learning <span class="ticker-sep">/</span></span>
+490
     <span class="ticker-item">Data Visualisation <span class="ticker-sep">/</span></span>
+491
     <span class="ticker-item">Scikit-learn <span class="ticker-sep">/</span></span>
+492
     <span class="ticker-item">Matplotlib <span class="ticker-sep">/</span></span>
+493
     <span class="ticker-item">JavaScript <span class="ticker-sep">/</span></span>
+494
     <span class="ticker-item">Python <span class="ticker-sep">/</span></span>
+495
     <span class="ticker-item">NumPy <span class="ticker-sep">/</span></span>
+496
     <span class="ticker-item">Pandas <span class="ticker-sep">/</span></span>
+497
     <span class="ticker-item">SQL <span class="ticker-sep">/</span></span>
+498
     <span class="ticker-item">Tableau <span class="ticker-sep">/</span></span>
+499
     <span class="ticker-item">Machine Learning <span class="ticker-sep">/</span></span>
+500
     <span class="ticker-item">Data Visualisation <span class="ticker-sep">/</span></span>
+501
     <span class="ticker-item">Scikit-learn <span class="ticker-sep">/</span></span>
+502
     <span class="ticker-item">Matplotlib <span class="ticker-sep">/</span></span>
+503
     <span class="ticker-item">JavaScript <span class="ticker-sep">/</span></span>
+504
   </div>
+505
 </div>
-
+506
+ 
+507
 <!-- ABOUT -->
+508
 <div class="section" id="about">
+509
   <div class="section-tag reveal"><span class="tag-line"></span>About Me</div>
+510
   <h2 class="section-h2 reveal d1">Data tells stories.<br/>I help people <em>hear them.</em></h2>
-
+511
+ 
+512
   <div class="about-grid">
+513
     <div class="reveal d2">
+514
       <p>
+515
         I'm a Computer Science graduate with a deep passion for data science and machine
+516
         learning. From building predictive models to designing interactive Tableau dashboards,
+517
         I thrive on finding meaningful patterns in complex data and translating them into
+518
         clear, impactful insights.
+519
       </p>
+520
       <p>
+521
         Currently open to AI evaluation projects, data analysis roles, and freelance
+522
         opportunities where I can apply my Python, machine learning, and visualisation skills
+523
         to real-world challenges.
+524
       </p>
+525
       <a href="https://mail.google.com/mail/?view=cm&to=lynechesergon18@gmail.com&su=Hello%20Lyne" target="_blank" class="btn-primary" style="margin-top:1.8rem;display:inline-block;width:fit-content;">
+526
         Let's Connect →
+527
       </a>
+528
       <div class="stats-grid">
+529
         <div class="stat-cell s1"><div class="stat-n">2+</div><div class="stat-l">Years Experience</div></div>
+530
         <div class="stat-cell s2"><div class="stat-n">6+</div><div class="stat-l">Projects Done</div></div>
+531
         <div class="stat-cell s3"><div class="stat-n">C1</div><div class="stat-l">English Level</div></div>
+532
         <div class="stat-cell s4"><div class="stat-n">8+</div><div class="stat-l">Tools &amp; Libs</div></div>
+533
       </div>
+534
     </div>
-
+535
+ 
+536
     <div class="about-visual reveal d3">
+537
       <div class="about-frame">
+538
         <img src="photo.jpeg" alt="Lyne Chesergon">
+539
         <div class="about-monogram">LC</div>
+540
       </div>
+541
       <div class="about-ring"></div>
+542
       <div class="about-badge">LC</div>
+543
     </div>
+544
   </div>
+545
 </div>
-
+546
+ 
+547
 <!-- PROJECTS -->
+548
 <div class="section" id="projects" style="padding-top:2rem;">
+549
   <div class="section-tag reveal"><span class="tag-line"></span>Featured Work</div>
+550
   <h2 class="section-h2 reveal d1">Projects that <em>speak for themselves.</em></h2>
+551
   <p class="section-lead reveal d2">A curated selection of data projects showcasing analysis, visualisation, and machine learning.</p>
-
+552
+ 
+553
   <div class="projects-grid">
-
+554
+ 
+555
     <!-- Project 1 — Netflix -->
+556
     <div class="proj-card proj-wide reveal">
+557
       <div class="proj-img bg-netflix" style="background-image:url('netflix_infographic.png');background-size:cover;background-position:center top;">
+558
         <div class="proj-gradient-overlay"></div>
+559
         <div class="proj-pill pill-gold">Data Analysis</div>
+560
       </div>
+561
       <div class="proj-body">
+562
         <div class="proj-meta">Featured Project</div>
+563
         <h3 class="proj-title">Netflix Movie Analysis</h3>
+564
         <p class="proj-desc">An in-depth infographic analysis of Netflix content trends — exploring genre distributions, release patterns, ratings, and what makes content popular.</p>
+565
         <div class="proj-tags">
+566
           <span class="ptag">Python</span>
+567
           <span class="ptag">Pandas</span>
+568
           <span class="ptag">Matplotlib</span>
+569
           <span class="ptag">EDA</span>
+570
         </div>
+571
         <a href="https://github.com/chesergon/Netflix-Movies-Data-Cleaning-" target="_blank" class="proj-link link-gold">View Project →</a>
+572
       </div>
+573
     </div>
-
+574
+ 
+575
     <!-- Project 2 — Crime Dashboard -->
+576
     <div class="proj-card proj-wide reveal d1">
+577
       <div class="proj-img bg-crime" style="background-image:url('photo2.jpeg');background-size:cover;background-position:center top;">
+578
         <div class="proj-gradient-overlay"></div>
+579
         <div class="proj-pill pill-teal">Dashboard</div>
+580
       </div>
+581
       <div class="proj-body">
+582
         <div class="proj-meta">Data Visualisation</div>
+583
         <h3 class="proj-title">LA Crime Analysis Dashboard</h3>
+584
         <p class="proj-desc">Interactive Tableau dashboard analysing LA crime patterns 2020–2024 — visualising hotspots, trends over time, and category breakdowns to support data-driven decisions.</p>
+585
         <div class="proj-tags">
+586
           <span class="ptag">Tableau</span>
+587
           <span class="ptag">SQL</span>
+588
           <span class="ptag">Visualisation</span>
+589
         </div>
+590
         <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;">
+591
           <a href="https://public.tableau.com/app/profile/lyne.chesergon/viz/LAcrimeanalysis_17775895867650/LAcrimeAnalysis2020-2024?publish=yes" target="_blank" class="proj-link link-teal">View Dashboard →</a>
+592
           <a href="#" target="_blank" class="proj-link link-violet">View on GitHub →</a>
+593
         </div>
+594
       </div>
+595
     </div>
-
+596
+ 
+597
       <!-- Project 3 — Medical Insurance Model -->
+598
      <div class="proj-card proj-wide reveal d2">
+599
        <div class="proj-img bg-insurance" style="position:relative;">
+600
          <img src="insurance_cover.png" class="insurance-cover" alt="Medical Insurance Model — BMI vs Charges scatter plot coloured by smoker status">
+601
          <div class="proj-gradient-overlay"></div>
+602
          <div class="proj-pill pill-coral">Regression Model</div>
+603
          <div class="insurance-stat">
+604
            <div class="insurance-stat-num">$23,650</div>
+605
            <div class="insurance-stat-label">smoker cost delta</div>
+606
          </div>
+607
        </div>
+608
        <div class="proj-body">
+609
          <div class="proj-meta">Machine Learning</div>
+610
          <h3 class="proj-title">Medical Insurance Cost Predictor</h3>
+611
          <p class="proj-desc">Built and compared three OLS regression models on a medical insurance dataset. Key finding: smoker status alone accounts for a $23,650 charge difference — more impactful than age, BMI, and region combined.</p>
+612
          <div class="proj-tags">
+613
            <span class="ptag">Python</span>
+614
            <span class="ptag">OLS Regression</span>
+615
            <span class="ptag">Statsmodels</span>
+616
            <span class="ptag">Seaborn</span>
+617
            <span class="ptag">Pandas</span>
+618
          </div>
+619
          <a href="https://github.com/chesergon/Medical-insurance-model" target="_blank" class="proj-link link-coral">View on GitHub →</a>
+620
        </div>
+621
      </div>
-
+622
+ 
+623
     <!-- Project 4 — Bank Transaction Volume Predictor -->
+624
     <div class="proj-card proj-wide reveal d3">
+625
       <div class="proj-img" style="background:linear-gradient(160deg, #0a0f0a 0%, #10241a 50%, #163a26 100%);display:flex;align-items:center;justify-content:center;position:relative;">
+626
         <div class="proj-gradient-overlay"></div>
+627
         <div class="proj-pill pill-teal">Live App</div>
+628
         <span class="proj-icon">🏦</span>
+629
       </div>
+630
       <div class="proj-body">
+631
         <div class="proj-meta">Machine Learning · Deployed</div>
+632
         <h3 class="proj-title">Bank Transaction Volume Predictor</h3>
+633
         <p class="proj-desc">End-to-end pipeline on 18M+ real bank transaction records — chunked feature engineering, K-Means customer segmentation, and a LightGBM regression model (RMSLE 0.41) with SHAP explainability, deployed as a live interactive app.</p>
+634
         <div class="proj-tags">
+635
           <span class="ptag">LightGBM</span>
+636
           <span class="ptag">K-Means</span>
+637
           <span class="ptag">SHAP</span>
+638
           <span class="ptag">Streamlit</span>
+639
         </div>
+640
         <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;">
+641
           <a href="https://bank-transaction-volume-predictor-o5gydhgbpj5m8epuic7jz8.streamlit.app/" target="_blank" class="proj-link link-teal">Try Live App →</a>
+642
           <a href="https://github.com/chesergon/Zindi-Bank-Transaction-Competition" target="_blank" class="proj-link link-gold">View on GitHub →</a>
+643
         </div>
+644
       </div>
+645
     </div>
-
+646
+ 
+647
       <!-- Project 5 — Coming Soon -->
+648
     <div class="proj-card proj-wide proj-faded reveal d3">
+649
       <div class="proj-img bg-empty" style="display:flex;align-items:center;justify-content:center;">
+650
         <span style="font-size:3rem;opacity:0.3;">➕</span>
+651
         <div class="proj-pill pill-violet">Coming Soon</div>
+652
       </div>
+653
       <div class="proj-body">
+654
         <div class="proj-meta">Next Project</div>
+655
         <h3 class="proj-title">M-Pesa Data Engineering</h3>
+656
         <p class="proj-desc">End-to-end data pipeline on synthetic M-Pesa transaction data — cleaning, EDA, and predictive modelling on Kenya's mobile money ecosystem.</p>
+657
         <div class="proj-tags">
+658
           <span class="ptag">PySpark</span><span class="ptag">Python</span><span class="ptag">EDA</span>
+659
         </div>
+660
         <a href="#" class="proj-link" style="color:var(--dim);">Coming Soon →</a>
+661
       </div>
+662
     </div>
-
+663
+ 
+664
   </div>
+665
 </div>
-
+666
+ 
+667
 <!-- CONTACT -->
+668
 <div class="contact-wrap" id="contact">
+669
   <div class="section-tag reveal"><span class="tag-line"></span>Get In Touch</div>
+670
   <div class="contact-card reveal d1">
+671
     <div class="contact-left">
+672
       <div class="contact-glow-1"></div>
+673
       <div class="contact-glow-2"></div>
+674
       <div class="contact-bg-word">Hello.</div>
+675
       <div class="section-tag" style="margin-bottom:1rem;"><span class="tag-line" style="background:var(--accent);"></span>Contact</div>
+676
       <h2 class="section-h2" style="font-size:clamp(1.7rem,2.8vw,2.4rem);margin-bottom:1.4rem;">
+677
         Let's build something<br/><em style="color:var(--accent);">remarkable.</em>
+678
       </h2>
+679
       <p style="color:rgba(237,237,244,0.45);font-size:0.92rem;line-height:1.85;font-weight:300;margin-bottom:2.2rem;">
+680
         Open to data science projects, AI evaluation opportunities, and meaningful collaborations. I'd love to explore how I can contribute.
+681
       </p>
+682
       <a href="https://mail.google.com/mail/?view=cm&to=lynechesergon18@gmail.com&su=Hello%20Lyne" target="_blank" class="contact-email">lynechesergon18@gmail.com</a><br/>
+683
       <a href="https://mail.google.com/mail/?view=cm&to=lynechesergon18@gmail.com&su=Hello%20Lyne" target="_blank" class="btn-primary" style="margin-top:1rem;display:inline-block;">Send an Email →</a>
+684
     </div>
+685
     <div class="contact-right">
+686
       <div>
+687
         <div class="cinfo">
+688
           <div class="cinfo-label">Email</div>
+689
           <div class="cinfo-value"><a href="https://mail.google.com/mail/?view=cm&to=lynechesergon18@gmail.com&su=Hello%20Lyne" target="_blank">lynechesergon18@gmail.com</a></div>
+690
         </div>
+691
         <div class="cinfo">
+692
           <div class="cinfo-label">LinkedIn</div>
+693
           <div class="cinfo-value"><a href="https://www.linkedin.com/in/lyne-chesergon-0a53272b5" target="_blank">linkedin.com/in/lynechesergon</a></div>
+694
         </div>
+695
         <div class="cinfo">
+696
           <div class="cinfo-label">GitHub</div>
+697
           <div class="cinfo-value"><a href="https://github.com/chesergon" target="_blank">github.com/chesergon</a></div>
+698
         </div>
+699
         <div class="cinfo">
+700
           <div class="cinfo-label">Availability</div>
+701
           <div class="cinfo-value" style="color:var(--accent2);">Open to opportunities ✦</div>
+702
         </div>
+703
       </div>
+704
       <div class="contact-btn-stack">
+705
         <a href="https://www.linkedin.com/in/lyne-chesergon-0a53272b5" target="_blank"class="btn-line btn-line-violet">LinkedIn Profile ↗
+706
         </a>
+707
         <a href="https://github.com/chesergon" target="_blank" class="btn-line btn-line-violet">GitHub Profile ↗</a>
+708
       </div>
+709
     </div>
+710
   </div>
+711
 </div>
-
+712
+ 
+713
 <!-- FOOTER -->
+714
 <footer>
+715
   <span class="footer-brand">Lyne Chesergon</span>
+716
   <span>© 2025 · Data Science Portfolio</span>
+717
   <span>Built with passion &amp; Python ✦</span>
+718
 </footer>
-
+719
+ 
+720
 <script>
+721
   const dot  = document.getElementById('cDot');
+722
   const ring = document.getElementById('cRing');
+723
   let mx=0, my=0, rx=0, ry=0;
+724
   document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+725
   (function loop() {
+726
     dot.style.left  = mx+'px'; dot.style.top  = my+'px';
+727
     rx += (mx-rx)*0.13; ry += (my-ry)*0.13;
+728
     ring.style.left = rx+'px'; ring.style.top = ry+'px';
+729
     requestAnimationFrame(loop);
+730
   })();
+731
   document.querySelectorAll('a,button').forEach(el => {
+732
     el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+733
     el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+734
   });
-
+735
+ 
+736
   const canvas = document.getElementById('grid-canvas');
+737
   const ctx    = canvas.getContext('2d');
+738
   let W, H, dots=[];
+739
   const GAP=44, R=1.1, REACH=110;
+740
   const COLS=['#e8c547','#4fc4cf','#c084fc','#f97466'];
-
+741
+ 
+742
   function resize() {
+743
     W=canvas.width=window.innerWidth;
+744
     H=canvas.height=window.innerHeight;
+745
     dots=[];
+746
     for(let x=0;x<W;x+=GAP)
+747
       for(let y=0;y<H;y+=GAP)
+748
         dots.push({ox:x,oy:y,x,y,c:COLS[Math.floor(Math.random()*COLS.length)]});
+749
   }
+750
   window.addEventListener('resize',resize); resize();
-
+751
+ 
+752
   let mouse={x:-999,y:-999};
+753
   window.addEventListener('mousemove',e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
-
+754
+ 
+755
   (function draw(){
+756
     ctx.clearRect(0,0,W,H);
+757
     for(const d of dots){
+758
       const dx=mouse.x-d.ox, dy=mouse.y-d.oy;
+759
       const dist=Math.sqrt(dx*dx+dy*dy);
+760
       const f=Math.max(0,1-dist/REACH);
+761
       d.x=d.ox-dx*f*0.25;
+762
       d.y=d.oy-dy*f*0.25;
+763
       ctx.beginPath();
+764
       ctx.arc(d.x,d.y,R+(f*1.8),0,Math.PI*2);
+765
       ctx.fillStyle=f>0.05?d.c:'rgba(255,255,255,0.12)';
+766
       ctx.globalAlpha=0.4+f*0.6;
+767
       ctx.fill();
+768
     }
+769
     ctx.globalAlpha=1;
+770
     requestAnimationFrame(draw);
+771
   })();
-
+772
+ 
+773
   const io = new IntersectionObserver(entries=>{
+774
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+775
   },{threshold:0.1});
+776
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+777
 </script>
+778
 </body>
+779
+
 </html>
